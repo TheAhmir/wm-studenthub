@@ -66,4 +66,4 @@ jobs:
           app-name: 'wm-studenthub'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B119C03C11944AF80C372E1954D102B }}
