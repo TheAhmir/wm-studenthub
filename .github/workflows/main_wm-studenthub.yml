@@ -18,21 +18,25 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install Backend Dependencies
-        run: npm install
-
-      - name: Install Frontend Dependencies and Build
+      - name: Install dependencies for Express and React (frontend)
         run: |
+          # Install backend dependencies
+          npm install
+          
+          # Install frontend dependencies (in client folder)
           cd client
           npm install
+
+      - name: Build React app
+        run: |
+          # Build React app in client folder
+          cd client
           npm run build
-          cd ..
 
-      - name: Move Frontend Build to Backend
-        run: mv client/build ./client_build
-
-      - name: Copy Frontend Build to Backend Static Directory
-        run: mv client_build build
+      - name: Build and test backend
+        run: |
+          # Run backend tests (optional)
+          npm run test --if-present
 
       - name: Zip artifact for deployment
         run: zip -r release.zip ./*
@@ -59,11 +63,11 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'wm-studenthub'
           slot-name: 'Production'
-          package: .
+          package: . 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B119C03C11944AF80C372E1954D102B }}
