@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as XLSX from 'xlsx';
 import './CourseReviewBaseView.scss';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const CourseReviewBaseView = () => {
     const [data, setData] = useState([])
