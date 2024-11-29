@@ -3,6 +3,8 @@ import React from 'react';
 import './App.scss';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomeView from './components/HomeView/HomeView';
+import ReviewsView from './components/ReviewsView/ReviewsView';
+import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
 
 const App = () => {
   return (
@@ -20,6 +22,8 @@ const App = () => {
         </div>
         <Routes>
           <Route path="/" element={<HomeView />} />
+          <Route path="/reviews" element={<ReviewsView />} />
+          <Route path="/reviews/courses/:course" element={<SingleCourseReviewView/>} />
         </Routes>
       </div>
     </Router>
