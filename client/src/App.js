@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomeView from './components/HomeView/HomeView';
 import ReviewsView from './components/ReviewsView/ReviewsView';
 import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
+import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/" element={<HomeView />} />
           <Route path="/reviews" element={<ReviewsView />} />
           <Route path="/reviews/courses/:course" element={<SingleCourseReviewView/>} />
+          <Route path="/reviews/course-insights" element={<CourseInsights />} />
         </Routes>
       </div>
     </Router>

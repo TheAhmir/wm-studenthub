@@ -11,7 +11,7 @@ const CourseReviewBaseView = () => {
     const [titleText, setTitleText] = useState('')
 
     useEffect(() => {
-        fetch(require('../../../data/course_id_data.xlsx'))
+        fetch(require('../../../../pythonVis/data/course_id_data.xlsx'))
         .then(response => response.arrayBuffer())
         .then(buffer => {
             const workbook = XLSX.read(buffer, {type : "array"});
@@ -54,6 +54,13 @@ const CourseReviewBaseView = () => {
                     type="text"
                     value={titleText}
                     onChange={(e) => setTitleText(e.target.value)}></input>
+                </div>
+                <div>
+                    <a href="/reviews/course-insights">
+                        <h2>
+                            {"Fun Insights!"}
+                        </h2>
+                    </a>
                 </div>
             </div>
             <h1>Filtered Courses</h1>
