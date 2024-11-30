@@ -82,7 +82,7 @@ const CourseInsights = () => {
         }, {});
     
         // Convert grouped data into arrays for labels, parents, and values
-        for (const [prefix, group] of Object.entries(groupedData)) {
+        for (const [group] of Object.entries(groupedData)) {
             labels.push(group.label);
             parents.push(''); // Top-level nodes have no parent
             values.push(group.count);
