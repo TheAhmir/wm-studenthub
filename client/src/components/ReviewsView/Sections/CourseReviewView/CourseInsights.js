@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Plot from 'react-plotly.js';
 import * as XLSX from 'xlsx';
+import './CourseInsights.scss'
 
 const CourseInsights = () => {
     const [data, setData] = useState([]);
@@ -58,12 +59,12 @@ const CourseInsights = () => {
             });
 
             // Filter to get the top 30 prefixes and format data for the tree map
-            const top30Prefixes = Object.entries(prefixCounts)
+            const AllPrefixes = Object.entries(prefixCounts)
                 .sort(([, countA], [, countB]) => countB - countA)
                 .map(([prefix]) => prefix);
 
-            const top30Data = data.filter(course => top30Prefixes.includes(course.prefix));
-            setTreeMapData(formatDataForTreeMap(top30Data));
+            const AllData = data.filter(course => AllPrefixes.includes(course.prefix));
+            setTreeMapData(formatDataForTreeMap(AllData));
         }
     }, [data]);
 
@@ -82,7 +83,7 @@ const CourseInsights = () => {
         }, {});
     
         // Convert grouped data into arrays for labels, parents, and values
-        for (const [group] of Object.entries(groupedData)) {
+        for (const [, group] of Object.entries(groupedData)) {
             labels.push(group.label);
             parents.push(''); // Top-level nodes have no parent
             values.push(group.count);
@@ -90,13 +91,14 @@ const CourseInsights = () => {
     
         return { labels, parents, values };
     };
-    
 
     return (
         <div>
             <div className="heading">
                 <h2>Course Insights</h2>
             </div>
+            <div className="content">
+            <div className="plot-container">
             {chart1Data ? (
                 <Plot
                     data={[
@@ -113,11 +115,14 @@ const CourseInsights = () => {
                         xaxis: { title: 'Prefix' },
                         yaxis: { title: 'Count' },
                         autosize: true,
+                        
                     }}
                 />
             ) : (
                 <p>Loading bar chart...</p>
             )}
+            </div>
+            <div className="plot-container">
             {treeMapData ? (
                 <Plot
                     data={[
@@ -136,13 +141,14 @@ const CourseInsights = () => {
                     layout={{
                         title: 'Courses Tree Map',
                         margin: { t: 30, l: 0, r: 0, b: 0 },
-                        height: 600,
-                        width: 1000,
+                        autosize: true,
                     }}
                 />
             ) : (
                 <p>Loading tree map...</p>
             )}
+            </div>
+            </div>
         </div>
     );
 };
