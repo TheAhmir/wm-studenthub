@@ -1,0 +1,33 @@
+.recent{
+    display: flex;
+    gap: 4rem;
+    height: min-content;
+    overflow-x: scroll;
+    overflow-y: hidden;
+
+    .recent-element {
+        width: 200px;
+        img {
+            height: 200px
+            
+        }
+    }
+}
+
+.main-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .main-element {
+        display: flex;
+        justify-content: center;
+        width: max-content;
+        padding-left: 1rem;
+
+        img {
+            height: 100px;
+        }
+
+    }
+}

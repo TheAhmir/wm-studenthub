@@ -6,6 +6,7 @@ import HomeView from './components/HomeView/HomeView';
 import ReviewsView from './components/ReviewsView/ReviewsView';
 import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
 import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
+import ShopView from './components/ShopView/ShopView';
 
 const App = () => {
   return (
@@ -23,6 +24,9 @@ const App = () => {
         </div>
         <Routes>
           <Route path="/" element={<HomeView />} />
+          {/*Shop Paths*/}
+          <Route path='/shop' element={<ShopView />} />
+          {/*Review Paths*/} 
           <Route path="/reviews" element={<ReviewsView />} />
           <Route path="/reviews/courses/:course" element={<SingleCourseReviewView/>} />
           <Route path="/reviews/course-insights" element={<CourseInsights />} />
