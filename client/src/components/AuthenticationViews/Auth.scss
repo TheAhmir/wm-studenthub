@@ -1,0 +1,29 @@
+.auth-page {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background-color:slategray;
+        border-radius: 10px;
+
+        .auth-item {
+            width: 200px;
+            padding: 1rem;
+            margin: 1rem;
+        }
+
+        .other-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+}
