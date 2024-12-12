@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.scss';
 import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom';
 import HomeView from './components/HomeView/HomeView';
@@ -8,14 +8,33 @@ import SingleCourseReviewView from './components/ReviewsView/Sections/CourseRevi
 import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
 import ShopView from './components/ShopView/ShopView';
 import SigninView from './components/AuthenticationViews/SigninView';
-import SignupView from './components/AuthenticationViews/SignupView';
+import { IoPersonCircleSharp } from "react-icons/io5";
+import { auth } from './components/FirebaseAuth/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Nav component
 const Nav = () => {
+  const [user, setUser] = useState(null)
   // initialize location and specify when to show nav
   const location = useLocation()
   const pathsToHideNav = ['/signin', '/signup', '/forgot-password']
   const showNavDisplay = !pathsToHideNav.includes(location.pathname)
+
+  useEffect(() => {
+    // Listen for authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+          console.log("User is logged in");
+          setUser(user); // Set the signed-in user
+      } else {
+          console.log("User is not logged in");
+          setUser(null); // Clear user if not signed in
+      }
+  });
+
+  // Clean up subscription on unmount
+  return () => unsubscribe();
+  }, []);
 
   // nav component with navigation links
   return (
@@ -29,7 +48,11 @@ const Nav = () => {
             <Link to={'/reviews'}>Reviews</Link>
             <Link to={'/about'}>About</Link>
           </div>
-          <Link to={'/signin'}>Sign In</Link>
+          {user ? 
+            <IoPersonCircleSharp />
+            :
+            <Link to={'/signin'}>Sign In</Link>
+          }
         </div>
     )}
     </>
@@ -57,7 +80,6 @@ const App = () => {
 
           {/*Authentication Paths*/}
           <Route path='/signin' element={<SigninView />} />
-          <Route path='/signup' element={<SignupView />} />
 
         </Routes>
       </div>
