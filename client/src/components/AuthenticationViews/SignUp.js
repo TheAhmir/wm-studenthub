@@ -3,36 +3,61 @@ import './Auth.scss';
 import { useNavigate } from "react-router-dom";
 import { auth } from "../FirebaseAuth/firebase";
 import { trackUserChanges } from "../FirebaseAuth/AuthMethods";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, createUserWithEmailAndPassword, validatePassword, sendEmailVerification} from "firebase/auth";
 
-const SigninView = () => {
+
+const SignUpView = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
-    const navigate = useNavigate();
+    const [isVerificationSent, setIsVerificationSent] = useState(false);
 
 const handleSignIn = async (event) => {
     event.preventDefault();
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alert('Please provide a valid email address.');
-        return;
-    }
+    const completeSignIn = async () => {
+        try {
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert('Please provide a valid email address.');
+                return;
+            }
 
-    signInWithEmailAndPassword(auth, email, password)
+            const status = await validatePassword(auth, password);
+
+            if (!status.isValid) {
+                alert('Invalid password.')
+                return
+            } else {
+                alert('creating account')
+            }
+
+            createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
-    // Signed in 
+    // Signed up 
     const user = userCredential.user;
-    navigate('/')
+    
+    sendEmailVerification(user)
+  .then(() => {
+    // Email verification sent!
+    setIsVerificationSent(true)
     // ...
+  });
   })
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    alert(errorMessage)
+    // ..
   });
 
-    
+
+
+
+        } catch (error) {
+
+        }
+    };
+
+    completeSignIn();
 };
 
 
@@ -48,12 +73,20 @@ const handleSignIn = async (event) => {
 
     return (
         <div className="auth-page">
-            {user ? (
-                <p>Signed in as: {user.email}</p>
+            {user ? (<div>
+                {
+                isVerificationSent ? ( auth.currentUser.emailVerified ? (
+                    <p>User email {user.email} has been verified.</p>) : <p>Verification email sent to {user.email}</p>) 
+                    : (
+                     auth.currentUser.emailVerified ? (
+                     <p>User email: {user.email} has been verified.</p>) : ( <p>Signed in as: {user.email}</p> ))
+                     }
+                     <a href="/">Home</a>
+                     </div> 
             ) : (
                 <>
                     <form className="auth-form" onSubmit={handleSignIn}>
-                        <h1>Sign In</h1>
+                        <h1>Sign Up</h1>
                         <input
                             className="auth-item"
                             name="email"
@@ -75,10 +108,6 @@ const handleSignIn = async (event) => {
                         <button className="auth-item auth-submit" type="submit">
                             Submit
                         </button>
-                        <div className="other-actions">
-                            <a href="/auth/forgot-password">Forgot password?</a>
-                            <a href="/auth/signup">Signup</a>
-                        </div>
                     </form>
                 </>
             )}
@@ -86,4 +115,4 @@ const handleSignIn = async (event) => {
     );
 };
 
-export default SigninView;
+export default SignUpView;

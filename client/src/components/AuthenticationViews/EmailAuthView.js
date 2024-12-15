@@ -2,49 +2,50 @@ import React, { useEffect, useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
 import { auth } from "../FirebaseAuth/firebase";
-import { trackUserChanges } from "../FirebaseAuth/AuthMethods";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from "firebase/auth";
+import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
 
-const SigninView = () => {
+const EmailAuthView = () => {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    //const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
-    const navigate = useNavigate();
 
 const handleSignIn = async (event) => {
     event.preventDefault();
 
+    // Check if we're on localhost
+    const isLocalhost = window.location.hostname === 'localhost';
+
+    // Validate the email input
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         alert('Please provide a valid email address.');
         return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    navigate('/')
-    // ...
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    alert(errorMessage)
-  });
+    // Firebase action code settings
+    const actionCodeSettings = {
+        url: isLocalhost 
+            ? `http://localhost:3000/?email=${email}` 
+            : `https://your-production-url.com/`,
+        handleCodeInApp: true,
+    };
 
-    
+    try {
+        // Initialize Firebase auth
+        const auth = getAuth();
+
+        // Send the sign-in link to the provided email
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+        // Store the email locally for later use
+        window.localStorage.setItem('emailForSignIn', email);
+
+        alert('Sign-in link sent! Check your email.');
+    } catch (error) {
+        console.error('Error sending sign-in link:', error.message);
+        alert('Failed to send sign-in link. Please try again.');
+    }
 };
-
-
-    useEffect(() => {
-        // Call trackUserChanges and pass a callback to update state
-        const unsubscribe = trackUserChanges((currentUser) => {
-            setUser(currentUser); // Update the user state
-        });
-
-        // Clean up the subscription when the component unmounts
-        return () => unsubscribe();
-    }, []);
 
     return (
         <div className="auth-page">
@@ -63,7 +64,7 @@ const handleSignIn = async (event) => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
-                        <input
+                        {/*<input
                             className="auth-item"
                             name="password"
                             type="password"
@@ -71,14 +72,10 @@ const handleSignIn = async (event) => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                        />
+                        />*/}
                         <button className="auth-item auth-submit" type="submit">
                             Submit
                         </button>
-                        <div className="other-actions">
-                            <a href="/auth/forgot-password">Forgot password?</a>
-                            <a href="/auth/signup">Signup</a>
-                        </div>
                     </form>
                 </>
             )}
@@ -86,4 +83,4 @@ const handleSignIn = async (event) => {
     );
 };
 
-export default SigninView;
+export default EmailAuthView;

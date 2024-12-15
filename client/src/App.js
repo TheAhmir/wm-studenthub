@@ -7,18 +7,21 @@ import ReviewsView from './components/ReviewsView/ReviewsView';
 import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
 import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
 import ShopView from './components/ShopView/ShopView';
-import SigninView from './components/AuthenticationViews/SigninView';
+import EmailAuthView from './components/AuthenticationViews/EmailAuthView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import SignUpView from './components/AuthenticationViews/SignUp';
+import SigninView from './components/AuthenticationViews/SigninView';
+import ProfileView from './components/ProfileView/ProfileView';
+import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
 
 // Nav component
 const Nav = () => {
   const [user, setUser] = useState(null)
   // initialize location and specify when to show nav
   const location = useLocation()
-  const pathsToHideNav = ['/signin', '/signup', '/forgot-password']
-  const showNavDisplay = !pathsToHideNav.includes(location.pathname)
+  const showNavDisplay = !location.pathname.startsWith('/auth')
 
   useEffect(() => {
     // Listen for authentication state changes
@@ -39,20 +42,31 @@ const Nav = () => {
   // nav component with navigation links
   return (
     <>
-    {showNavDisplay && (
+    {showNavDisplay ? (
       <div className='nav'>
-          <h3>StudentHub</h3>
+          <Link to={'/'} className='home-link'>
+            <h3>StudentHub</h3>
+          </Link>
           <div className='links'>
-            <Link to={'/'}>Home</Link>
+            {/*<Link to={'/'}>Home</Link>*/}
             <Link to={'/shop'}>Shop</Link>
             <Link to={'/reviews'}>Reviews</Link>
             <Link to={'/about'}>About</Link>
           </div>
           {user ? 
-            <IoPersonCircleSharp />
+            <Link to={'/my-profile'}>
+              <IoPersonCircleSharp />
+            </Link>
             :
-            <Link to={'/signin'}>Sign In</Link>
+            <Link to={'/auth/signin'}>Sign In</Link>
           }
+        </div>
+    ) :
+    (
+      <div className='nav'>
+          <Link to={'/'} className='home-link'>
+            <h3>StudentHub</h3>
+          </Link>
         </div>
     )}
     </>
@@ -79,7 +93,13 @@ const App = () => {
           <Route path="/reviews/course-insights" element={<CourseInsights />} />
 
           {/*Authentication Paths*/}
-          <Route path='/signin' element={<SigninView />} />
+          <Route path='/auth/email-auth' element={<EmailAuthView />} />
+          <Route path='/auth/signin' element={<SigninView />} />
+          <Route path='/auth/signup' element={<SignUpView />} />
+          <Route path='/auth/forgot-password' element={<ForgotPasswordView />} />
+
+          {/*User Profile Paths*/}
+          <Route path='/my-profile' element={<ProfileView />} />
 
         </Routes>
       </div>
