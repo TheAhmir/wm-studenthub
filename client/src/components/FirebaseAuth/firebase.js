@@ -5,13 +5,13 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyD__BsebOOKAnuZtu3XPgkq33l4Z321kjA",
-  authDomain: "wm-studenthub.firebaseapp.com",
-  projectId: "wm-studenthub",
-  storageBucket: "wm-studenthub.firebasestorage.app",
-  messagingSenderId: "787299348386",
-  appId: "1:787299348386:web:9e688f392ffc9966c68cfb",
-  measurementId: "G-WXCJ1MYQY1"
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
