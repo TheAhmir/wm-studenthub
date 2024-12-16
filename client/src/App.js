@@ -7,20 +7,27 @@ import ReviewsView from './components/ReviewsView/ReviewsView';
 import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
 import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
 import ShopView from './components/ShopView/ShopView';
-import EmailAuthView from './components/AuthenticationViews/EmailAuthView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import ProfileView from './components/ProfileView/ProfileView';
 import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
 import SignupAndSignin from './components/AuthenticationViews/SignupAndSignin';
+import { verifyEmail } from './components/FirebaseAuth/AuthMethods';
 
 // Nav component
 const Nav = () => {
   const [user, setUser] = useState(null)
+  const [sentVerificationEmail, setSentVerificationEmail] = useState(false);
   // initialize location and specify when to show nav
   const location = useLocation()
   const showNavDisplay = !location.pathname.startsWith('/auth')
+
+  const handleSendVerificationEmail = () => {
+    verifyEmail(auth.currentUser, (result) => {
+      setSentVerificationEmail(result)
+    })
+  }
 
   useEffect(() => {
     // Listen for authentication state changes
@@ -40,9 +47,24 @@ const Nav = () => {
 
   // nav component with navigation links
   return (
-    <>
+    <div className='nav-container'>
     {showNavDisplay ? (
-      <div className='nav'>
+      <div>
+        {user && (
+          !user.emailVerified && (
+            <div className={`email-not-verified-notice ${sentVerificationEmail ? 'verification-sent' : ''}`}>
+              {sentVerificationEmail ? 
+                (
+                  <p className='verification-text'>Verification email has been sent. Please check you email to verify.</p>
+                )
+                :
+                (
+                  <p className='verification-text'>You have not verified your email. Send verification link <a className='verify-email-button' onClick={handleSendVerificationEmail}>here</a></p>
+              )}
+            </div>
+          )
+        )}
+        <div className={`nav ${user && !user.emailVerified ? 'email-not-verified-content' : ''}`}>
           <Link to={'/'} className='home-link'>
             <h3>StudentHub</h3>
           </Link>
@@ -66,6 +88,7 @@ const Nav = () => {
             </Link>
           }
         </div>
+      </div>
     ) :
     (
       <div className='nav'>
@@ -74,7 +97,7 @@ const Nav = () => {
           </Link>
         </div>
     )}
-    </>
+    </div>
   )
 }
 
@@ -98,7 +121,6 @@ const App = () => {
           <Route path="/reviews/course-insights" element={<CourseInsights />} />
 
           {/*Authentication Paths*/}
-          <Route path='/auth/email-auth' element={<EmailAuthView />} />
           <Route path='/auth/signin' element={<SignupAndSignin />} />
           <Route path='/auth/forgot-password' element={<ForgotPasswordView />} />
 

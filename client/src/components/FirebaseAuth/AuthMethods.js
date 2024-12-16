@@ -1,4 +1,4 @@
-import { onAuthStateChanged, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, validatePassword } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, validatePassword, signOut } from "firebase/auth";
 import { auth } from "./firebase";
 
 const trackUserChanges = (callback) => {
@@ -47,7 +47,7 @@ const createAccount = (email, password, callback) => {
                 callback(null)
             });
 } 
-const signIn = async (email, password, callback) => {
+const signInUser = async (email, password, callback) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
@@ -63,5 +63,21 @@ const signIn = async (email, password, callback) => {
       });
 }
 
+const signOutUser = (callback) => {
+    signOut(auth).then(() => {
+                callback(true)
+              }).catch((error) => {
+                callback(false)
+              });
+}
 
-export { trackUserChanges, verifyEmail, isAcceptablePassword, createAccount, signIn, isAcceptableEmail };
+const isSignedIn = (callback) => {
+    if (auth.currentUser) {
+        callback(true)
+    } else {
+        callback(false)
+    }
+}
+
+
+export { trackUserChanges, verifyEmail, isAcceptablePassword, createAccount, signInUser, signOutUser, isSignedIn, isAcceptableEmail };

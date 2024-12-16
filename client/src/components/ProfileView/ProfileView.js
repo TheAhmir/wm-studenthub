@@ -1,19 +1,19 @@
 import React from "react";
 import { auth } from "../FirebaseAuth/firebase";
-import { signOut } from "firebase/auth";
+import { signOutUser } from "../FirebaseAuth/AuthMethods";
 import { useNavigate } from "react-router-dom";
 
 const ProfileView = () => {
     const navigate = useNavigate()
 
     const handleSignOut = () => {
-        signOut(auth).then(() => {
-            // Sign-out successful.
-            navigate('/')
-          }).catch((error) => {
-            // An error happened.
-            alert(error)
-          });
+        signOutUser((result) => {
+            if (result) {
+                navigate('/')
+            } else {
+                alert('There was an error signing out.')
+            }
+        })
     }
     return (
         <div>
