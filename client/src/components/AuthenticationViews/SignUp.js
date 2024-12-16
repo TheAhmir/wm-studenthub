@@ -79,12 +79,12 @@ const handleSignIn = async (event) => {
 
     useEffect(() => {
         // Call trackUserChanges and pass a callback to update state
-        const unsubscribe = trackUserChanges(({/*currentuser*/}) => {
+        {/*const unsubscribe = trackUserChanges(({}) => {
             //setUser(currentUser); // Update the user state
         });
 
         // Clean up the subscription when the component unmounts
-        return () => unsubscribe();
+        return () => unsubscribe();*/}
     }, []);
 
     return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
-import { trackUserChanges, isAcceptableEmail, signIn } from "../FirebaseAuth/AuthMethods";
+import { trackUserChanges, isAcceptableEmail, signInUser } from "../FirebaseAuth/AuthMethods";
 
 const SignInView = () => {
     const [email, setEmail] = useState('');
@@ -13,8 +13,8 @@ const handleSignIn = async (event) => {
 
     isAcceptableEmail(email, (isValid) => {
         if (isValid) {
-            signIn(email, password, (result) => {
-                if (result) {
+            signInUser(email, password, (user) => {
+                if (user) {
                     navigate('/')
                 } else {
                     alert('Failed to sign in. Try again.')
@@ -29,12 +29,12 @@ const handleSignIn = async (event) => {
 
     useEffect(() => {
         // Call trackUserChanges and pass a callback to update state
-        const unsubscribe = trackUserChanges(({/*currentuser*/}) => {
+        {/*const unsubscribe = trackUserChanges(({}) => {
             //setUser(currentUser); // Update the user state
         });
 
         // Clean up the subscription when the component unmounts
-        return () => unsubscribe();
+        return () => unsubscribe();*/}
     }, []);
 
     return (
