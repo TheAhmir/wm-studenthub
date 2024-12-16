@@ -11,10 +11,9 @@ import EmailAuthView from './components/AuthenticationViews/EmailAuthView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import SignUpView from './components/AuthenticationViews/SignUp';
-import SigninView from './components/AuthenticationViews/SigninView';
 import ProfileView from './components/ProfileView/ProfileView';
 import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
+import SignupAndSignin from './components/AuthenticationViews/SignupAndSignin';
 
 // Nav component
 const Nav = () => {
@@ -55,10 +54,16 @@ const Nav = () => {
           </div>
           {user ? 
             <Link to={'/my-profile'}>
-              <IoPersonCircleSharp />
+              <div className='profile-icon'>
+                <IoPersonCircleSharp />
+              </div>
             </Link>
             :
-            <Link to={'/auth/signin'}>Sign In</Link>
+            <Link to={'/auth/signin'}>
+              <div className='profile-text'>
+                Sign In
+              </div>
+            </Link>
           }
         </div>
     ) :
@@ -94,8 +99,7 @@ const App = () => {
 
           {/*Authentication Paths*/}
           <Route path='/auth/email-auth' element={<EmailAuthView />} />
-          <Route path='/auth/signin' element={<SigninView />} />
-          <Route path='/auth/signup' element={<SignUpView />} />
+          <Route path='/auth/signin' element={<SignupAndSignin />} />
           <Route path='/auth/forgot-password' element={<ForgotPasswordView />} />
 
           {/*User Profile Paths*/}

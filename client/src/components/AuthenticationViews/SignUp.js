@@ -1,60 +1,76 @@
 import React, { useEffect, useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
-import { auth } from "../FirebaseAuth/firebase";
-import { trackUserChanges } from "../FirebaseAuth/AuthMethods";
-import { onAuthStateChanged, createUserWithEmailAndPassword, validatePassword, sendEmailVerification} from "firebase/auth";
+import { trackUserChanges, isAcceptablePassword, createAccount, verifyEmail, isAcceptableEmail } from "../FirebaseAuth/AuthMethods";
 
+const PasswordChecklist = ({items}) => {
+    
+    return (
+        <div className="password-checklist-container">
+            {items.map((item, index) => (
+            <div className="password-checklist-items">
+                <p>{item.isValid ? '✔️' : '❌'} {item.message}</p>
+            </div>
+        ))}
+        </div>
+    )
+}
 
 const SignUpView = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [user, setUser] = useState(null);
-    const [isVerificationSent, setIsVerificationSent] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isPasswordFocused, setIsPasswordFocused] = useState(false)
+    const navigate = useNavigate()
+
+    const capitalRegex = /[A-Z]/
+    const lowercaseRegex = /[a-z]/
+    const specialcharacterRegex = /[!@#$%^&*(),.?":{}|<>]/
+    const numberRegex = /[0-9]/
+
+    const passwordChecklistItems = [ 
+        { message: <>Have at least <strong>one capital letter</strong></>, isValid: capitalRegex.test(password) }, 
+        { message: <>Have at least <strong>one lowercase letter</strong></>, isValid: lowercaseRegex.test(password) }, 
+        { message: <>Have at least <strong>one special character</strong></>, isValid: specialcharacterRegex.test(password) }, 
+        { message: <>Have at least <strong>one number</strong></>, isValid: numberRegex.test(password) },
+        { message: <>Be at least <strong>6 characters</strong></>, isValid: password.length >= 6}
+    ]
 
 const handleSignIn = async (event) => {
     event.preventDefault();
 
     const completeSignIn = async () => {
-        try {
-            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                alert('Please provide a valid email address.');
-                return;
-            }
-
-            const status = await validatePassword(auth, password);
-
-            if (!status.isValid) {
-                alert('Invalid password.')
-                return
+        isAcceptableEmail(email, (isValid) => {
+            if (isValid) {
+                isAcceptablePassword(password, (isValid) => {
+                    if (isValid) {
+                        if (confirmPassword === password) {
+                            createAccount(email, password, (result) => {
+                                if (result) {
+                                    verifyEmail(result, (isEmailSent) => {
+                                        if (isEmailSent) {
+                                            alert(`Verification email has been sent to ${email}`)
+                                            navigate('/')
+                                        } else {
+                                            alert(`Verification email could not be sent to ${email}`)
+                                        }
+                                    })
+                                } else {
+                                    alert('Failed to sign up. Try again.')
+                                }
+                            })
+                        } else {
+                            alert('The passwords entered are not the same.')
+                        }
+        
+                    } else {
+                        alert('Please provide a valid password.')
+                    }
+                })
             } else {
-                alert('creating account')
+                alert('Please provide a valid email address.')
             }
-
-            createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    
-    sendEmailVerification(user)
-  .then(() => {
-    // Email verification sent!
-    setIsVerificationSent(true)
-    // ...
-  });
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
-
-
-
-
-        } catch (error) {
-
-        }
+        })
     };
 
     completeSignIn();
@@ -63,8 +79,8 @@ const handleSignIn = async (event) => {
 
     useEffect(() => {
         // Call trackUserChanges and pass a callback to update state
-        const unsubscribe = trackUserChanges((currentUser) => {
-            setUser(currentUser); // Update the user state
+        const unsubscribe = trackUserChanges(({/*currentuser*/}) => {
+            //setUser(currentUser); // Update the user state
         });
 
         // Clean up the subscription when the component unmounts
@@ -73,19 +89,7 @@ const handleSignIn = async (event) => {
 
     return (
         <div className="auth-page">
-            {user ? (<div>
-                {
-                isVerificationSent ? ( auth.currentUser.emailVerified ? (
-                    <p>User email {user.email} has been verified.</p>) : <p>Verification email sent to {user.email}</p>) 
-                    : (
-                     auth.currentUser.emailVerified ? (
-                     <p>User email: {user.email} has been verified.</p>) : ( <p>Signed in as: {user.email}</p> ))
-                     }
-                     <a href="/">Home</a>
-                     </div> 
-            ) : (
-                <>
-                    <form className="auth-form" onSubmit={handleSignIn}>
+            <form className="auth-form" onSubmit={handleSignIn}>
                         <h1>Sign Up</h1>
                         <input
                             className="auth-item"
@@ -94,8 +98,11 @@ const handleSignIn = async (event) => {
                             placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onFocus={() => setIsPasswordFocused(false)}
                             required
                         />
+                        <div>
+                        {isPasswordFocused && <PasswordChecklist items={passwordChecklistItems}/>}
                         <input
                             className="auth-item"
                             name="password"
@@ -103,14 +110,34 @@ const handleSignIn = async (event) => {
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            onFocus={() => setIsPasswordFocused(true)}
+                            onBlur={() => setIsPasswordFocused(false)}
                             required
                         />
+                        </div>
+                        <div className="confirm-password">
+                            <input
+                                className="auth-item"
+                                name="confirm-password"
+                                type="password"
+                                placeholder="Re-enter password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                            />
+                            {password.length !== 0 && (
+                                confirmPassword === password ?
+                                    (
+                                        <p>{'✔️'} Passwords match</p>
+                                    ) : (
+                                        <p>{'❌'} Passwords do not match</p>
+                                    )
+                            )}
+                        </div>
                         <button className="auth-item auth-submit" type="submit">
                             Submit
                         </button>
                     </form>
-                </>
-            )}
         </div>
     );
 };
