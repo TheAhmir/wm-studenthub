@@ -33,7 +33,7 @@ const ForgotPasswordView = () => {
     const handleChangePasswordWithEmail = (event) => {
         event.preventDefault();
         const actionCodeSettings = {
-            url: `http://localhost:3000/auth/signin`,
+            url: `http://localhost:3000/auth/forgot-password`,
             handleCodeInApp: true
         };
 
@@ -49,14 +49,14 @@ const ForgotPasswordView = () => {
 
     const handleDontKnowOldPassword = () => {
         confirmPasswordReset(auth, oobCode, newPassword)
-        navigate('/auth/signin')
+        //navigate('/auth/signin')
     }
 
     useEffect(() => {
         const code = searchParams.get('oobCode') ?? null;
 
         if (code) {
-            setOobCode(oobCode)
+            setOobCode(code)
             setView('missing-old-password');
         }
     }, [searchParams]);

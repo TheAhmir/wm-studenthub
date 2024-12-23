@@ -60,7 +60,7 @@ const Nav = () => {
                 )
                 :
                 (
-                  <p className='verification-text'>You have not verified your email. Send verification link <a className='verify-email-button' onClick={handleSendVerificationEmail}>here</a></p>
+                  <p className='verification-text'>You have not verified your email. Send verification link <b className='verify-email-button' onClick={handleSendVerificationEmail}>here</b></p>
               )}
             </div>
           )
