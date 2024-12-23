@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
-import { trackUserChanges, isAcceptablePassword, createAccount, verifyEmail, isAcceptableEmail } from "../FirebaseAuth/AuthMethods";
+import {isAcceptablePassword, createAccount, verifyEmail, isAcceptableEmail } from "../FirebaseAuth/AuthMethods";
 
 const PasswordChecklist = ({items}) => {
     

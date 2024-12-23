@@ -14,6 +14,7 @@ import ProfileView from './components/ProfileView/ProfileView';
 import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
 import SignupAndSignin from './components/AuthenticationViews/SignupAndSignin';
 import { verifyEmail } from './components/FirebaseAuth/AuthMethods';
+import SignInView from './components/AuthenticationViews/SignIn';
 
 // Nav component
 const Nav = () => {
@@ -123,6 +124,7 @@ const App = () => {
           {/*Authentication Paths*/}
           <Route path='/auth/signin' element={<SignupAndSignin />} />
           <Route path='/auth/forgot-password' element={<ForgotPasswordView />} />
+          <Route path='/auth/new-password-signin' element={<SignInView />} />
 
           {/*User Profile Paths*/}
           <Route path='/my-profile' element={<ProfileView />} />
