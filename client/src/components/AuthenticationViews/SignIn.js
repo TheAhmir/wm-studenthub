@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
-import { trackUserChanges, isAcceptableEmail, signInUser } from "../FirebaseAuth/AuthMethods";
+import {isAcceptableEmail, signInUser } from "../FirebaseAuth/AuthMethods";
 
 const SignInView = () => {
     const [email, setEmail] = useState('');

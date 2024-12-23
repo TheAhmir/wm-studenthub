@@ -1,6 +1,7 @@
 import React from "react";
 import SignUpView from "./SignUp";
-import SignInView from "./SignInView";
+import SignInView from "./SignIn";
+
 import './SignupAndSignin.scss';
 
 const SignupAndSignin = () => {

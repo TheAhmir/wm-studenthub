@@ -8,7 +8,7 @@ const ForgotPasswordView = () => {
     const [email, setEmail] = useState('');
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+    const [oobCode, setOobCode] = useState('');
     const [view, setView] = useState('email');
 
     const navigate = useNavigate();
@@ -18,12 +18,11 @@ const ForgotPasswordView = () => {
         setView('password-reset');
     };
 
-    const handleResetPasswordWithOldPassword = () => {
+    const handleResetPasswordWithOldPassword = (event) => {
+        event.preventDefault();
         signInUser(email, oldPassword, (user) => {
             if (user) {
                 updatePassword(user, newPassword);
-                setIsPasswordChanged(true);
-                
                 navigate('/')
             } else {
                 alert('Could not sign in. Email or password must be incorrect.')
@@ -31,25 +30,33 @@ const ForgotPasswordView = () => {
         });
     };
 
-    const handleDontKnowOldPassword = () => {
+    const handleChangePasswordWithEmail = (event) => {
+        event.preventDefault();
         const actionCodeSettings = {
-            url: `${process.env.NODE_ENV === 'production' ? process.env.REACT_APP_PROD_URL : process.env.REACT_APP_DEV_URL}/auth/forgot-password?email=${email}`,
+            url: `http://localhost:3000/auth/signin`,
             handleCodeInApp: true
         };
 
         sendPasswordResetEmail(auth, email, actionCodeSettings)
             .then(() => {
                 console.log('Password reset email sent');
+                alert(`Reset password link has been sent to ${email}`)
             })
             .catch((error) => {
                 console.error('Error sending password reset email', error);
             });
     };
 
-    useEffect(() => {
-        const oobCode = searchParams.get('oobCode') ?? null;
+    const handleDontKnowOldPassword = () => {
+        confirmPasswordReset(auth, oobCode, newPassword)
+        navigate('/auth/signin')
+    }
 
-        if (oobCode) {
+    useEffect(() => {
+        const code = searchParams.get('oobCode') ?? null;
+
+        if (code) {
+            setOobCode(oobCode)
             setView('missing-old-password');
         }
     }, [searchParams]);
@@ -79,7 +86,7 @@ const ForgotPasswordView = () => {
             case 'password-reset':
                 return (
                     <div className="auth-page">
-                        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); handleResetPasswordWithOldPassword(); }}>
+                        <form className="auth-form" onSubmit={ handleResetPasswordWithOldPassword}>
                             <h1>Update Password</h1>
                             <input
                                 className="auth-item"
@@ -103,22 +110,22 @@ const ForgotPasswordView = () => {
                                 Submit
                             </button>
                             <p>or</p>
-                            <p>Get email to change password</p>
+                            <p onClick={handleChangePasswordWithEmail}>Get email to change password</p>
                         </form>
                     </div>
                 );
             case 'missing-old-password':
                 return (
                     <div className="auth-page">
-                        <form className="auth-form" onSubmit={(e) => { e.preventDefault(); handleDontKnowOldPassword(); }}>
-                            <h1>Account Email</h1>
+                        <form className="auth-form" onSubmit={handleDontKnowOldPassword }>
+                            <h1>Enter New Password</h1>
                             <input
                                 className="auth-item"
-                                name="email"
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                name="new-password"
+                                type="password"
+                                placeholder="New Password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
                                 required
                             />
                             <button className="auth-item auth-submit" type="submit">
