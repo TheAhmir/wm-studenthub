@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../FirebaseAuth/firebase";
-import { sendPasswordResetEmail, confirmPasswordReset, updatePassword, signOut } from "firebase/auth";
+import { sendPasswordResetEmail, confirmPasswordReset, updatePassword } from "firebase/auth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { signInUser } from "../FirebaseAuth/AuthMethods";
 
