@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import './Auth.scss';
 import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
 import {isAcceptablePassword, createAccount, verifyEmail, isAcceptableEmail } from "../FirebaseAuth/AuthMethods";
 
 const PasswordChecklist = ({items}) => {
@@ -36,6 +37,12 @@ const SignUpView = () => {
         { message: <>Be at least <strong>6 characters</strong></>, isValid: password.length >= 6}
     ]
 
+    const getRandomSubstring = (str, length) => {
+        const startIndex = Math.floor(Math.random() * (str.length - length + 1));
+        return str.slice(startIndex, startIndex + length);
+      };
+      
+
 const handleSignIn = async (event) => {
     event.preventDefault();
 
@@ -47,6 +54,10 @@ const handleSignIn = async (event) => {
                         if (confirmPassword === password) {
                             createAccount(email, password, (result) => {
                                 if (result) {
+                                    const display = `anon${getRandomSubstring(result.uid, 5)}`;
+                                    updateProfile(result, {
+                                        displayName: display
+                                      })
                                     verifyEmail(result, (isEmailSent) => {
                                         if (isEmailSent) {
                                             alert(`Verification email has been sent to ${email}`)

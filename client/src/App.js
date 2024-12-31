@@ -9,6 +9,7 @@ import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/C
 import ShopView from './components/ShopView/ShopView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
+import { trackUserChanges } from './components/FirebaseAuth/AuthMethods';
 import { onAuthStateChanged } from 'firebase/auth';
 import ProfileView from './components/ProfileView/ProfileView';
 import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
@@ -20,6 +21,7 @@ import SignInView from './components/AuthenticationViews/SignIn';
 const Nav = () => {
   const [user, setUser] = useState(null)
   const [sentVerificationEmail, setSentVerificationEmail] = useState(false);
+  const [selected, setSelected] = useState('');
   // initialize location and specify when to show nav
   const location = useLocation()
   const showNavDisplay = !location.pathname.startsWith('/auth')
@@ -32,19 +34,15 @@ const Nav = () => {
 
   useEffect(() => {
     // Listen for authentication state changes
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-          console.log("User is logged in");
-          setUser(user); // Set the signed-in user
-      } else {
-          console.log("User is not logged in");
-          setUser(null); // Clear user if not signed in
-      }
-  });
+    const unsubscribe = trackUserChanges(setUser);
 
-  // Clean up subscription on unmount
-  return () => unsubscribe();
+    // Clean up subscription on unmount
+    return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setSelected(location.pathname)
+  }, [location])
 
   // nav component with navigation links
   return (
@@ -71,18 +69,18 @@ const Nav = () => {
           </Link>
           <div className='links'>
             {/*<Link to={'/'}>Home</Link>*/}
-            <Link to={'/shop'}>Shop</Link>
-            <Link to={'/reviews'}>Reviews</Link>
-            <Link to={'/about'}>About</Link>
+            <Link className={selected === '/shop' ? 'selected' : ''} to={'/shop'}>Shop</Link>
+            <Link className={selected === '/reviews' ? 'selected' : ''} to={'/reviews'}>Reviews</Link>
+            <Link className={selected === '/about' ? 'selected' : ''}  to={'/about'}>About</Link>
           </div>
           {user ? 
-            <Link to={'/my-profile'}>
-              <div className='profile-icon'>
+            <Link className={`profile-link`} to={'/my-profile'}>
+              <div className={`profile-icon ${selected === '/my-profile' ? 'selected' : ''}`}>
                 <IoPersonCircleSharp />
               </div>
             </Link>
             :
-            <Link to={'/auth/signin'}>
+            <Link className='profile-link' to={'/auth/signin'}>
               <div className='profile-text'>
                 Sign In
               </div>
@@ -124,6 +122,7 @@ const App = () => {
           {/*Authentication Paths*/}
           <Route path='/auth/signin' element={<SignupAndSignin />} />
           <Route path='/auth/forgot-password' element={<ForgotPasswordView />} />
+          <Route path='/auth/forgot-password/__/auth/action' element={<ForgotPasswordView />} />
           <Route path='/auth/new-password-signin' element={<SignInView />} />
 
           {/*User Profile Paths*/}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CourseReviewBaseView from "./Sections/CourseReviewView/CourseReviewBaseView";
+import HousingReviewBaseView from "./Sections/HousingReviewView/HousingReviewBaseView";
 import './ReviewsView.scss';
 
 const ReviewsView = () => {
@@ -8,7 +9,7 @@ const ReviewsView = () => {
     const renderSection = () => {
         switch (optionSelect) {
             case 'housing':
-                break;
+                return <HousingReviewBaseView />
             case 'courses':
                 return <CourseReviewBaseView/>
             default:

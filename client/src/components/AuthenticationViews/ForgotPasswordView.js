@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { auth } from "../FirebaseAuth/firebase";
 import { sendPasswordResetEmail, confirmPasswordReset, updatePassword } from "firebase/auth";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { signInUser } from "../FirebaseAuth/AuthMethods";
+import { signInUser, signOutUser } from "../FirebaseAuth/AuthMethods";
 
 const ForgotPasswordView = () => {
     const [email, setEmail] = useState('');
@@ -32,12 +32,8 @@ const ForgotPasswordView = () => {
 
     const handleChangePasswordWithEmail = (event) => {
         event.preventDefault();
-        const actionCodeSettings = {
-            url: `http://localhost:3000/auth/forgot-password`,
-            handleCodeInApp: true
-        };
 
-        sendPasswordResetEmail(auth, email, actionCodeSettings)
+        sendPasswordResetEmail(auth, email)
             .then(() => {
                 console.log('Password reset email sent');
                 alert(`Reset password link has been sent to ${email}`)
@@ -49,13 +45,24 @@ const ForgotPasswordView = () => {
 
     const handleDontKnowOldPassword = () => {
         confirmPasswordReset(auth, oobCode, newPassword)
-        //navigate('/auth/signin')
+        
+        signOutUser((result) => {
+            if (result) {
+                console.log('Password reset has been confirmed.')
+                
+            } else {
+                alert("An error has occured changing password. Please try again.")
+            }
+        })
+
+        navigate('/auth/new-password-signin')
     }
 
     useEffect(() => {
         const code = searchParams.get('oobCode') ?? null;
 
         if (code) {
+            console.log(code)
             setOobCode(code)
             setView('missing-old-password');
         }
