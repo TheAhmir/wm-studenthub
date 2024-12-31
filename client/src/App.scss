@@ -10,7 +10,7 @@
 
   .home-link {
     text-decoration: none;
-    color: black
+    color: black;
   }
 
   .links {
@@ -19,21 +19,65 @@
     justify-content: center;
     display: flex;
     gap: 5rem;
+    
+    a {
+      text-decoration: none;
+      color: black;
+      opacity: 0.6;
+    }
+
+    .selected {
+      opacity: 1.0;
+      text-decoration: underline;
+    }
+
+    a:hover {
+      opacity: 0.8;
+    }
+
+    .selected:hover {
+      opacity: 1;
+    }
+  }
+
+  .profile-link {
+    text-decoration: none;
   }
 
   .profile-icon {
     font-size:xx-large;
+    color: black;
+    opacity: 0.6;
   }
+
+  .profile-icon:hover {
+    opacity: 0.8;
+  }
+
+  .selected {
+    opacity: 1;
+  }
+  .selected:hover {
+    opacity: 1;
+  }
+
   .profile-text {
     font-size: larger;
+    color: black;
+    opacity: 0.6;
+  }
+
+  .profile-text:hover {
+    opacity: 0.8;
   }
 }
 
 .email-not-verified-notice {
-  background-color: rgb(255, 0, 0, 0.4);
+  background-color: rgb(249, 140, 140);
   margin: 0;
   left: 0;
   right: 0;
+  z-index: 999;
   position: fixed;
   display: flex;
   justify-content: center;
@@ -42,10 +86,11 @@
   }
 
   .verify-email-button {
-    color: rgb(0, 0, 255, 0.8);
+    color: rgba(68, 68, 255, 0.8);
   }
   .verify-email-button:hover {
     cursor: pointer;
+    color: rgba(28, 28, 255, 0.8);
   }
 }
 

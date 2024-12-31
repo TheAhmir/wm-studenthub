@@ -9,6 +9,8 @@ const CourseReviewBaseView = () => {
     const [prefixText, setPrefixText] = useState('')
     const [codeText, setCodeText] = useState('')
     const [titleText, setTitleText] = useState('')
+    const [numPages, setNumPages] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
         fetch(require('../../../../pythonVis/data/course_id_data.xlsx'))
@@ -20,6 +22,7 @@ const CourseReviewBaseView = () => {
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
             setData(jsonData);
         }).catch(err => console.error("Error loading XLSX file:", err))
+
     }, []);
 
     useEffect(() => {
@@ -29,8 +32,14 @@ const CourseReviewBaseView = () => {
         (titleText ? row['title'].toLowerCase().includes(titleText.toLowerCase()) : true)
         );
         setFilteredData(data_filter)
+
+        setCurrentPage(0)
     }, [prefixText, codeText, titleText, data])
     
+    useEffect(() => {
+        const pages = Math.floor(filteredData.length / 15);
+        setNumPages(pages)
+    }, [filteredData])
     return (
         <div>
             <div className="search">
@@ -63,8 +72,10 @@ const CourseReviewBaseView = () => {
                     </a>
                 </div>
             </div>
-            <h1>Filtered Courses</h1>
+            <h1>Courses</h1>
+            <div className="filtered-classes">
             {filteredData.map((row, index) => (
+                currentPage === 0 ? index <= 15 &&(
                 <div>
                     <Link 
                     to={`/reviews/courses/${row['prefix']}-${row['code']}-${row['title'].replace(/\s+/g, '-').replace('?', '')}`}
@@ -73,7 +84,40 @@ const CourseReviewBaseView = () => {
                     {row['prefix']} {row['code']} - {row['title']}
                     </Link>
                 </div>
+                ) :
+                index > currentPage * 15 && index <= (currentPage + 1) * 15 && (
+                    <div>
+                    <Link 
+                    to={`/reviews/courses/${row['prefix']}-${row['code']}-${row['title'].replace(/\s+/g, '-').replace('?', '')}`}
+                    state={{ course : row}}
+                    key={index}>
+                    {row['prefix']} {row['code']} - {row['title']}
+                    </Link>
+                </div>
+                )
             ))}
+            </div>
+            <div className="page-buttons">
+            {filteredData.length !== 0 && (
+                <>
+                {currentPage > 5 && (
+                <>
+                <p className="index" onClick={() => setCurrentPage(0)}>0</p>
+                <p>...</p>
+                </>
+            )}
+            {Array.from({length: numPages}, (_, index) => (index >= currentPage - 5 && index <= currentPage + 5) && (
+                <p className={index === currentPage ? 'index curPage' : 'index'} onClick={() => setCurrentPage(index)}>{index}</p>
+            ))}
+            {currentPage < numPages - 5 && (
+                <>
+                <p>...</p>
+                <p className="index" onClick={() => setCurrentPage(numPages - 5)}>{numPages - 5}</p>
+                </>
+            )}
+            </>
+            )}
+            </div>
         </div>
     )
 }
