@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { signOutUser, trackUserChanges } from "../FirebaseAuth/AuthMethods";
+import { auth } from "../FirebaseAuth/firebase";
+import { deleteUser,EmailAuthProvider, reauthenticateWithCredential, updateProfile, updateEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import AlertButton from "../Other/alertButton";
 import './ProfileView.scss'
@@ -10,8 +12,26 @@ const ProfileView = () => {
     const [user, setUser] = useState(null);
     const [editStage, setEditStage] = useState('not-editable');
     const [isDeletingAccount, setDeletingAccount] = useState(false);
+    const [pressedDelete, setPressedDelete] = useState(false);
+    const [password, setPassword] = useState('');
+    const [displaynameInput, setDisplaynameInput] = useState('');
+    const [emailInput, setEmailInput] = useState('');
+
+
+    const retryReauthenticate = () => {
+        const password = prompt("Re-authentication required. Please enter your password:");
+        const credential = EmailAuthProvider.credential(user.email, password);
+        reauthenticateWithCredential(user, credential).then(() => {
+          // User re-authenticated, try updating email again
+        }).catch((error) => {
+          alert(`Re-authentication failed: ${error.message}`);
+          retryReauthenticate(); // Retry re-authentication on failure
+        });
+      };
 
     const changeEditStage = () => {
+        setDisplaynameInput('')
+        setEmailInput('')
         if (editStage === 'not-editable') {
             setEditStage('editable')
             return
@@ -19,6 +39,81 @@ const ProfileView = () => {
         if (editStage === 'editable') {
             setEditStage('not-editable')
             return
+        }
+    }
+
+    const handleSaveChanges = () => {
+
+        if (isValidEdit(displaynameInput, user.displayName) && isValidEdit(emailInput, user.email)) {
+
+
+        }
+
+        if (isValidEdit(displaynameInput, user.displayName)) {
+            if (displaynameInput && displaynameInput !== user?.displayName) {
+                updateProfile(auth.currentUser, {
+                    displayName: displaynameInput
+                  }).then(() => {
+                    // Profile updated!
+                    // ...
+                    setEditStage('not-editable')
+                  }).catch((error) => {
+                    // An error occurred
+                    // ...
+                  });
+            }
+            return
+        }
+
+        if (isValidEdit(emailInput, user.email)) {
+            updateEmail(user, emailInput).then(() => {
+                setEditStage('not-editable')
+            }).catch((error) => {
+                if (error.code === 'auth/requires-recent-login') {
+                    retryReauthenticate();
+                } else { 
+                // An error occurred other than needing re-authentication 
+                alert(error.message)
+                }
+            })
+            return
+        }
+
+    }
+
+    const handlePressedDelete = () => {
+        setPressedDelete(true)
+    }
+
+    const handleDeleteAccount = () => {
+        if (password) {
+            const credential = EmailAuthProvider.credential(user?.email, password)
+
+        reauthenticateWithCredential(user, credential).then(() => {
+            // User re-authenticated.
+            deleteUser(user).then(() => {
+                // User deleted.
+                navigate('/')
+              }).catch((error) => {
+                // An error ocurred
+                // ...
+                alert(error)
+              });
+          }).catch((error) => {
+            // An error ocurred
+            // ...
+            alert(`${error.message}`)
+          });
+        } else {
+            alert("Password is incorrect.")
+        }
+    }
+
+    const isValidEdit = (input, checking) => {
+        if (input && input !== checking) {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -45,7 +140,7 @@ const ProfileView = () => {
             <div className="header">
                 <div className="title">
                     <h1>My Profile</h1>
-                    <button onClick={() => changeEditStage()}><CiEdit className="edit-button"/></button>
+                    <button onClick={changeEditStage}><CiEdit className="edit-button"/></button>
                 </div>
 
                 <p className="signout" onClick={handleSignOut}>signout</p>
@@ -61,7 +156,11 @@ const ProfileView = () => {
                 )}
                 {editStage === 'editable' && (
                     <input className="editable"
-                    placeholder={user?.displayName}/>
+                    placeholder={user?.displayName}
+                    type="text"
+                    name="displayname"
+                    value={displaynameInput}
+                    onChange={(e) => setDisplaynameInput(e.target.value)}/>
                 )}
             </div>
             <div className="user-info">
@@ -73,10 +172,14 @@ const ProfileView = () => {
                 )}
                 {editStage === 'editable' && (
                     <input className="editable"
-                    placeholder={user?.email}/>
+                    placeholder={user?.email}
+                    type="email"
+                    name="email"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}/>
                 )}
             </div>
-            <div className="user-info">
+            {/*<div className="user-info">
                 <p className="label">Phone Number</p>
                 {editStage === 'not-editable' && (
                     <div className="not-editable">
@@ -87,18 +190,28 @@ const ProfileView = () => {
                     <input className="editable"
                     placeholder={user?.phoneNumber ?? 'Ex. 800-8135'}/>
                 )}
-            </div>
+            </div>*/}
                 </div>
             
             <div className="column column2">
             <div className="centerer">
-                <p>I want to reset my password</p>
+                <a href={`/auth/forgot-password?email=${user?.email}`} className="reset_password">I want to reset my password</a>
                 <button onClick={() => setDeletingAccount(true)}>
                     <p>Delete My Account</p>
                 </button>
             </div>
             </div>
             </div>
+
+            {editStage === 'editable' && (
+                <div className="save-edits">
+                <button className={`save-button ${(isValidEdit(displaynameInput, user.displayName) || isValidEdit(emailInput, user.email)) ? 'valid-edits' : 'invalid-edits'}`}
+                onClick={handleSaveChanges}>
+                    Save
+                </button>
+            </div>
+            )
+            }
 
             {isDeletingAccount && (
                 <div className="delete-alert-container">
@@ -109,9 +222,31 @@ const ProfileView = () => {
                     <div className="place-in-front">
                         <p><strong>Warning:</strong> Are you sure your want to delete your account?</p>
 
+                        {pressedDelete && (
+                            <div>
+                                <label>Enter Password:</label>
+                            <input 
+                            name="password" 
+                            type="text" 
+                            placeholder="MY_passw0rd!"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}/>
+                            <strong className="required-entry">*</strong>
+                        </div>
+                        )}
+
                         <div className="delete-buttons">
-                            <p onClick={() => setDeletingAccount(false)}>NO</p>
-                            <p>YES</p>
+                            {pressedDelete ? 
+                            <>
+                                <p onClick={() => setPressedDelete(false)} className="decision-button">CANCEL</p>
+                                <p onClick={handleDeleteAccount} className="decision-button">DELETE</p>
+                            </>
+                            :
+                            <>
+                                <p onClick={() => setDeletingAccount(false)} className="decision-button">NO</p>
+                                <p onClick={handlePressedDelete} className="decision-button">YES</p>
+                            </>
+                            }
                         </div>
                     </div>
                 }
