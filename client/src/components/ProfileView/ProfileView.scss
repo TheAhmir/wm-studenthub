@@ -30,6 +30,17 @@
     }
 }
 
+.save-edits {
+}
+
+.invalid-edits {
+    background-color: gray;
+}
+
+.valid-edits {
+    background-color: blue;
+}
+
 .displayName {
     .user-info {
         .not-editable {
@@ -80,4 +91,11 @@
         border: solid black;
         border-radius: 10px;
     }
+}
+
+.save-edits {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
 }

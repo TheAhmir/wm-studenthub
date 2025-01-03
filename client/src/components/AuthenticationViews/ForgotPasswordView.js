@@ -61,8 +61,14 @@ const ForgotPasswordView = () => {
     useEffect(() => {
         const code = searchParams.get('oobCode') ?? null;
 
+        const email_option = searchParams.get('email') ?? null
+
+        if (email_option) {
+            setEmail(email_option)
+            setView('password-reset')
+        }
+
         if (code) {
-            console.log(code)
             setOobCode(code)
             setView('missing-old-password');
         }
@@ -94,7 +100,7 @@ const ForgotPasswordView = () => {
                 return (
                     <div className="auth-page">
                         <form className="auth-form" onSubmit={ handleResetPasswordWithOldPassword}>
-                            <h1>Update Password</h1>
+                            <h1>Reset Password</h1>
                             <input
                                 className="auth-item"
                                 name="old-password"
