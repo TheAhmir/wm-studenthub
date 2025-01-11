@@ -10,7 +10,6 @@ import ShopView from './components/ShopView/ShopView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
 import { trackUserChanges } from './components/FirebaseAuth/AuthMethods';
-import { onAuthStateChanged } from 'firebase/auth';
 import ProfileView from './components/ProfileView/ProfileView';
 import ForgotPasswordView from './components/AuthenticationViews/ForgotPasswordView';
 import SignupAndSignin from './components/AuthenticationViews/SignupAndSignin';
