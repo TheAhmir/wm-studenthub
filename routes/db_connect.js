@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const MONGODB_URI = process.env.AZURE_COSMOS_CONNECTIONSTRING;
 
-router.get('/data', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
