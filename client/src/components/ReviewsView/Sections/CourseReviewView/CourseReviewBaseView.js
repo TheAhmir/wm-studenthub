@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import './CourseReviewBaseView.scss';
 import { Link } from 'react-router-dom';
 
-const CourseReviewBaseView = () => {
+const CourseReviewBaseView = ({initialData}) => {
     const [data, setData] = useState([])
     const [filteredData, setFilteredData] = useState([])
     const [prefixText, setPrefixText] = useState('')
@@ -13,16 +13,7 @@ const CourseReviewBaseView = () => {
     const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
-        fetch(require('../../../../pythonVis/data/course_id_data.xlsx'))
-        .then(response => response.arrayBuffer())
-        .then(buffer => {
-            const workbook = XLSX.read(buffer, {type : "array"});
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet);
-            setData(jsonData);
-        }).catch(err => console.error("Error loading XLSX file:", err))
-
+        setData(initialData)
     }, []);
 
     useEffect(() => {

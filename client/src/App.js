@@ -102,6 +102,21 @@ const Nav = () => {
 // Main app component
 // specifies all possible pages
 const App = () => {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    fetch(`${process.env.REACT_APP_API_URL}/data/Courses`)  // Replace with your new endpoint URL
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(jsonData => {
+                setCourses(jsonData);
+            })
+            .catch(err => console.error("Error fetching data:", err));
+  }, [])
   return (
     <Router>
       <div className='container'>
@@ -114,9 +129,9 @@ const App = () => {
           <Route path='/shop' element={<ShopView />} />
 
           {/*Review Paths*/} 
-          <Route path="/reviews" element={<ReviewsView />} />
+          <Route path="/reviews" element={<ReviewsView courseData={courses}/>} />
           <Route path="/reviews/courses/:course" element={<SingleCourseReviewView/>} />
-          <Route path="/reviews/course-insights" element={<CourseInsights />} />
+          <Route path="/reviews/course-insights" element={<CourseInsights/>} />
 
           {/*Authentication Paths*/}
           <Route path='/auth/signin' element={<SignupAndSignin />} />
