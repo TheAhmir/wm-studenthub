@@ -3,7 +3,7 @@ import CourseReviewBaseView from "./Sections/CourseReviewView/CourseReviewBaseVi
 import HousingReviewBaseView from "./Sections/HousingReviewView/HousingReviewBaseView";
 import './ReviewsView.scss';
 
-const ReviewsView = () => {
+const ReviewsView = ({courseData}) => {
     const [optionSelect, setOptionSelect] = useState('courses')
 
     const renderSection = () => {
@@ -11,7 +11,7 @@ const ReviewsView = () => {
             case 'housing':
                 return <HousingReviewBaseView />
             case 'courses':
-                return <CourseReviewBaseView/>
+                return <CourseReviewBaseView initialData={courseData}/>
             default:
                 break;
         }
