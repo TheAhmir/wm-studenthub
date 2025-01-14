@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - wm-studenthub
 
 on:
@@ -18,28 +21,14 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies for Express and React (frontend)
+      - name: npm install, build, and test
         run: |
-          # Install backend dependencies
           npm install
-          
-          # Install frontend dependencies (in client folder)
-          cd client
-          npm install
-
-      - name: Build React app
-        run: |
-          # Build React app in client folder
-          cd client
-          npm run build
-
-      - name: Build and test backend
-        run: |
-          # Run backend tests (optional)
+          npm run build --if-present
           npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip ./*
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -62,12 +51,12 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
-      - name: Deploy to Azure Web App
+      
+      - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'wm-studenthub'
           slot-name: 'Production'
-          package: . 
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5B119C03C11944AF80C372E1954D102B }}
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F41724B1CB8406680D3EB0F5025ACBF }}
