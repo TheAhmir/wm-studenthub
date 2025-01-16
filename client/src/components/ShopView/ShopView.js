@@ -9,6 +9,7 @@ const ShopView = () => {
     return (
         <div>
             <h3>Hi!</h3>
+            <h2>Below</h2>
             <p>This is the shop view!!!!</p>
             <div className="recent">
                 {recent_filler.map((_, index) => (
