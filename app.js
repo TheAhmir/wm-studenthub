@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+var cors = require('cors');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var { spawn } = require('child_process');
@@ -10,6 +11,8 @@ var usersRouter = require('./routes/users');
 var dbRouter = require('./routes/db_connect');
 
 var app = express();
+
+app.use(cors())
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
