@@ -14,7 +14,7 @@ const CourseReviewBaseView = ({initialData}) => {
 
     useEffect(() => {
         setData(initialData)
-    }, []);
+    }, [initialData]);
 
     useEffect(() => {
         const data_filter = data.filter(row =>
