@@ -4,7 +4,7 @@ import { signOutUser, trackUserChanges } from "../FirebaseAuth/AuthMethods";
 import { auth } from "../FirebaseAuth/firebase";
 import { deleteUser,EmailAuthProvider, reauthenticateWithCredential, updateProfile, updateEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import AlertButton from "../Other/alertButton";
+import AlertButton from "./components/alertButton";
 import './ProfileView.scss'
 
 const ProfileView = () => {
@@ -16,7 +16,12 @@ const ProfileView = () => {
     const [password, setPassword] = useState('');
     const [displaynameInput, setDisplaynameInput] = useState('');
     const [emailInput, setEmailInput] = useState('');
+    const [showReviews, setShowReviews] = useState(false);
+    const [reviews, setReviews] = useState(null);
 
+    const toggleShowReviews = () => {
+        setShowReviews(prevState => !prevState)
+    }
 
     const retryReauthenticate = () => {
         const password = prompt("Re-authentication required. Please enter your password:");
@@ -134,6 +139,24 @@ const ProfileView = () => {
         // Clean up subscription on unmount
         return () => unsubscribe();
       }, []);
+
+    useEffect(() => {
+        if (!user) return;
+        fetch(`${process.env.REACT_APP_API_URL}/users/reviews/${user.uid}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response.json();
+            })
+            .then(reviewData => {
+                setReviews(reviewData)
+
+                })
+                .catch(err => {
+                    console.error("Error fetching reviews:", err)
+                });
+    }, [user])
 
     return (
         <div className="profile-page">
@@ -253,6 +276,12 @@ const ProfileView = () => {
                 />
                 </div>
                 </div>
+            )}
+            <h2 className={`my-reviews ${showReviews ? 'showingReviews' : ''}`} onClick={toggleShowReviews}>My Reviews</h2>
+            {showReviews && reviews && (
+                reviews.map((review, index) => (
+                    <p>{review.courseName}: {review.body}</p>
+                ))
             )}
         </div>
     )

@@ -1,0 +1,112 @@
+.heading {
+    text-align: center;
+}
+
+.course-rating {
+    padding-top: 1rem;
+    margin-bottom: 4rem;
+    display: flex;
+    gap: 4rem;
+    justify-content: center;
+    align-items: center;
+
+    .text-rating {
+        margin-left: 2rem;
+        padding: 1rem;
+        border: 1px solid black;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+
+        .rating-title {
+            font-size: medium;
+            font-weight: bold;
+        }
+    }
+
+    .low {
+        background-color: green;
+    }
+
+    .med {
+        background-color: darkgoldenrod;
+    }
+
+    .high {
+        background-color: red;
+    }
+}
+
+.leave-a-review {
+    display: flex;
+    width: fit-content;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border: 2px solid lightblue;
+    border-radius: 10px;
+}
+
+.leave-a-review:hover {
+    background-color: lightblue;
+    cursor: pointer;
+}
+
+.review-count {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    margin-bottom: 1rem;
+}
+
+.reviews {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+
+    .review {
+        width: 90%;
+        padding: 1rem;
+        border: solid 2px black;
+        border-radius: 5px;
+    
+        .meta-data {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+}
+
+.review-rating {
+    display: flex;
+    flex-direction: column;
+}
+
+.date-trash {
+    display: flex;
+    gap: 2rem;
+}
+
+.trash-icon {
+    font-size: large;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(380deg) scale(1.2); /* 360 + 20 degrees */
+    }
+  }
+  
+  .trash-icon:hover {
+    animation: spin .5s ease-in-out forwards; /* 1s is the duration of the spin */
+    cursor: pointer;
+  }
+  

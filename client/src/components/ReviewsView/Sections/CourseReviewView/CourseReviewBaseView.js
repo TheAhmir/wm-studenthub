@@ -70,7 +70,9 @@ const CourseReviewBaseView = ({initialData}) => {
                 <div>
                     <Link 
                     to={`/reviews/courses/${row['prefix']}-${row['code']}-${row['title'].replace(/\s+/g, '-').replace('?', '')}`}
-                    state={{ course : row}}
+                    state={{ 
+                        course : row
+                    }}
                     key={index}>
                     {row['prefix']} {row['code']} - {row['title']}
                     </Link>

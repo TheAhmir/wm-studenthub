@@ -27,7 +27,7 @@ const CourseInsights = () => {
     };
 
     useEffect(() => {
-        fetch(require('../../../../pythonVis/data/course_id_data.xlsx'))
+        fetch(require('../../../../../pythonVis/data/course_id_data.xlsx'))
             .then(response => response.arrayBuffer())
             .then(buffer => {
                 const workbook = XLSX.read(buffer, { type: "array" });

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const MONGODB_URI = process.env.AZURE_COSMOS_CONNECTIONSTRING;
@@ -37,5 +37,28 @@ router.get('/:collectionName', async (req, res) => {
         console.error(error);
     }
 });
+
+// Route to get all data from a specific document
+router.get('/:collectionName/:id', async (req, res) => {
+    try {
+        const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+        await client.connect();
+        const db = client.db("wm-studenthub-database"); 
+
+        const collectionName = req.params.collectionName;
+        const collection = db.collection(collectionName);
+
+        const objectId = new ObjectId(req.params.id);
+
+        const document = await collection.find({ _id: objectId }).toArray();
+
+        await client.close();
+        res.status(200).json(document);
+    } catch (error) {
+        res.status(500).send("Error connecting to MongoDB");
+        console.error(error);
+    }
+});
+
 
 module.exports = router;

@@ -4,8 +4,8 @@ import './App.scss';
 import { BrowserRouter as Router, Route, Routes, Link, useLocation } from 'react-router-dom';
 import HomeView from './components/HomeView/HomeView';
 import ReviewsView from './components/ReviewsView/ReviewsView';
-import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/SingleCourseReviewView';
-import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/CourseInsights';
+import SingleCourseReviewView from './components/ReviewsView/Sections/CourseReviewView/single_course/SingleCourseReviewView';
+import CourseInsights from './components/ReviewsView/Sections/CourseReviewView/insights/CourseInsights';
 import ShopView from './components/ShopView/ShopView';
 import { IoPersonCircleSharp } from "react-icons/io5";
 import { auth } from './components/FirebaseAuth/firebase';
@@ -73,7 +73,7 @@ const Nav = () => {
             <Link className={selected === '/about' ? 'selected' : ''}  to={'/about'}>About</Link>
           </div>
           {user ? 
-            <Link className={`profile-link`} to={'/my-profile'}>
+            <Link className={`profile-link`} to={selected === '/my-profile' ? '/' : '/my-profile'}>
               <div className={`profile-icon ${selected === '/my-profile' ? 'selected' : ''}`}>
                 <IoPersonCircleSharp />
               </div>

@@ -1,0 +1,135 @@
+.comment-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999; 
+
+    .background {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 70%;
+            height: 70%;
+            background-color: aliceblue;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+    }
+}
+
+.header {
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+    align-items: center;
+
+    .icon {
+        font-size: x-large;
+        color: grey;
+    }
+
+    .icon:hover {
+        cursor: pointer;
+        color: black
+    }
+}
+
+.rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    .text-rating {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        margin-left: 2rem;
+        padding: 1rem;
+
+        .rating-number {
+            font-size: larger;
+            font-weight: bold;
+        }
+
+        .low {
+            color: green;
+        }
+
+        .med {
+            color: darkgoldenrod;
+        }
+
+        .high {
+            color: red;
+        }
+    }
+
+}
+
+.text-rating-row-2 {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    margin-left: 4rem;
+}
+
+.rating-title {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.review {
+    width: 30rem;
+    height: 12rem;
+}
+
+.review-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.required {
+    position: relative;
+    cursor: pointer;
+    color: darkred;
+}
+
+.required::after {
+    content: 'This field is required';  /* Tooltip message */
+    position: absolute;
+    bottom: 100%; /* Position above the asterisk */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    white-space: nowrap;
+  }
+  
+  /* Show the tooltip on hover */
+  .required:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }

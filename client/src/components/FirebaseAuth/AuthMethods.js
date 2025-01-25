@@ -38,6 +38,7 @@ const createAccount = (email, password, callback) => {
     createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
+                addDatabaseUser(user)
                 callback(user)
             })
             .catch((error) => {
@@ -77,6 +78,26 @@ const isSignedIn = (callback) => {
     } else {
         callback(false)
     }
+}
+
+// db functions
+const addDatabaseUser = (user) => {
+  fetch(`${process.env.REACT_APP_API_URL}/auth/ADD_USER`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+      // ADD SECRET KEY
+      //'Aurthorization': token
+    },
+    body: JSON.stringify({
+      _id: user.uid,
+      userId: 123, //shardkey
+      email: user.email
+    })
+  })
+  .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error', error))
 }
 
 

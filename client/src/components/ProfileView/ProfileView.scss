@@ -99,3 +99,17 @@
     align-items: center;
     justify-content: center;
 }
+
+.my-reviews {
+    width: fit-content;
+    color: gray;
+}
+
+.my-reviews:hover {
+    color: black;
+    cursor: pointer;
+}
+
+.showingReviews {
+    color: black;
+}
