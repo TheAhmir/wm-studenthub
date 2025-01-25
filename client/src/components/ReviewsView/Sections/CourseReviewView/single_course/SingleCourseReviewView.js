@@ -34,7 +34,7 @@ const SingleCourseReviewView = () => {
 
     useEffect(() => {
         calculateAverages()
-    }, [reviews, calculateAverages])
+    }, [reviews])
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/reviews/${course._id}`)
@@ -59,7 +59,7 @@ const SingleCourseReviewView = () => {
     
         // Clean up subscription on unmount
         return () => unsubscribe();
-      });
+      }, []);
 
     if (!course) {
         return <div>No course information available</div>;
