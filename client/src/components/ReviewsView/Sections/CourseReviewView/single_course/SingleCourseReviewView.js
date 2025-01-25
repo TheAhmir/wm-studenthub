@@ -21,7 +21,7 @@ const SingleCourseReviewView = () => {
         setMakeReview(prevState => !prevState)
     }
 
-    const calculateAverages = () => {
+    useEffect(() => {
         if (!reviewsLoaded) return;
 
         const totalDifficulty = reviews.reduce((sum, review) => sum + Number(review.difficulty), 0)
@@ -29,12 +29,7 @@ const SingleCourseReviewView = () => {
 
         const totalWorkLoad = reviews.reduce((sum, review) => sum + Number(review.workLoad), 0)
         setAvgWorkLoad((totalWorkLoad / reviews.length).toFixed(1))
-
-    }
-
-    useEffect(() => {
-        calculateAverages()
-    }, [reviews])
+    }, [reviews, reviewsLoaded])
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/reviews/${course._id}`)
@@ -59,7 +54,7 @@ const SingleCourseReviewView = () => {
     
         // Clean up subscription on unmount
         return () => unsubscribe();
-      }, []);
+      });
 
     if (!course) {
         return <div>No course information available</div>;
