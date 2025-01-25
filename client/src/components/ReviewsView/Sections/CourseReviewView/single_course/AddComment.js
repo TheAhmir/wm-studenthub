@@ -55,7 +55,7 @@ const AddComment = ({close, this_user, course}) => {
 
     useEffect(() => {
         setUser(this_user)
-    }, [])
+    }, [this_user])
 
     return (
         <div className='comment-page'>

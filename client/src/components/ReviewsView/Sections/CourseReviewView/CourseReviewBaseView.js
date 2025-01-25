@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as XLSX from 'xlsx';
 import './CourseReviewBaseView.scss';
 import { Link } from 'react-router-dom';
 
