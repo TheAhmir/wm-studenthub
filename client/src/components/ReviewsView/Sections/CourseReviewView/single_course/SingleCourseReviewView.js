@@ -21,7 +21,11 @@ const SingleCourseReviewView = () => {
         setMakeReview(prevState => !prevState)
     }
 
+<<<<<<< HEAD
     useEffect(() => {
+=======
+    const calculateAverages = () => {
+>>>>>>> 7f143c199ac34f274981fedce7d80ee351c56de0
         if (!reviewsLoaded) return;
 
         const totalDifficulty = reviews.reduce((sum, review) => sum + Number(review.difficulty), 0)
@@ -29,7 +33,16 @@ const SingleCourseReviewView = () => {
 
         const totalWorkLoad = reviews.reduce((sum, review) => sum + Number(review.workLoad), 0)
         setAvgWorkLoad((totalWorkLoad / reviews.length).toFixed(1))
+<<<<<<< HEAD
     }, [reviews, reviewsLoaded])
+=======
+
+    }
+
+    useEffect(() => {
+        calculateAverages()
+    }, [reviews])
+>>>>>>> 7f143c199ac34f274981fedce7d80ee351c56de0
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/reviews/${course._id}`)
@@ -54,7 +67,11 @@ const SingleCourseReviewView = () => {
     
         // Clean up subscription on unmount
         return () => unsubscribe();
+<<<<<<< HEAD
       });
+=======
+      }, []);
+>>>>>>> 7f143c199ac34f274981fedce7d80ee351c56de0
 
     if (!course) {
         return <div>No course information available</div>;
