@@ -59,7 +59,7 @@ const SingleCourseReviewView = () => {
     
         // Clean up subscription on unmount
         return () => unsubscribe();
-      }, [course._id]);
+      });
 
     if (!course) {
         return <div>No course information available</div>;
