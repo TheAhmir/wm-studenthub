@@ -1,5 +1,10 @@
-import { onAuthStateChanged, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, validatePassword, signOut } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, validatePassword, signOut, updateProfile } from "firebase/auth";
 import { auth } from "./firebase";
+
+const getRandomSubstring = (str, length) => {
+  const startIndex = Math.floor(Math.random() * (str.length - length + 1));
+  return str.slice(startIndex, startIndex + length);
+};
 
 const trackUserChanges = (callback) => {
   return onAuthStateChanged(auth, (user) => {
@@ -38,8 +43,14 @@ const createAccount = (email, password, callback) => {
     createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                addDatabaseUser(user)
-                callback(user)
+                const display = `anon${getRandomSubstring(user.uid, 5)}`;
+                updateProfile(user, {
+                  displayName: display
+                }).then(() => {
+                  addDatabaseUser(user)
+                  callback(user)
+                })
+                
             })
             .catch((error) => {
                 //const errorCode = error.code;
@@ -90,9 +101,9 @@ const addDatabaseUser = (user) => {
       //'Aurthorization': token
     },
     body: JSON.stringify({
-      _id: user.uid,
-      userId: 123, //shardkey
-      email: user.email
+      Id: user.uid,
+      Name: user.displayName,
+      Email: user.email
     })
   })
   .then(response => response.json())

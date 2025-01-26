@@ -1,10 +1,22 @@
 const express = require('express')
 const router = express.Router()
-const { MongoClient } = require('mongodb')
-require('dotenv').config()
+const sql = require('mssql');
+require('dotenv').config();
 
-const MONGODB_URI = process.env.AZURE_COSMOS_CONNECTIONSTRING
-
+const config = {
+    user: process.env.AZURE_SQL_USERNAME,
+    password: process.env.AZURE_SQL_PASSWORD,
+    server: process.env.AZURE_SQL_SERVER,
+    database: process.env.AZURE_SQL_DATABASE,
+    options: {
+        encrypt: true,
+        trustServerCertificate: true,
+        enableArithAbort: true,
+        port: Number(process.env.AZURE_SQL_PORT)
+    },
+    connectionTimeout: 30000,
+    requestTimeout: 30000,
+};
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -13,21 +25,22 @@ router.get('/', function(req, res, next) {
 
 // get a users individual reviews
 router.get('/reviews/:id', async (req, res) => {
-    let client;
+    let pool;
     try {
-            client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-            await client.connect();
-            const db = client.db("wm-studenthub-database"); 
-            const collection = db.collection('Reviews');
+            pool = await sql.connect(config)
             const id = req.params.id
-            const document = await collection.find({userId: id}).toArray();
-            res.status(200).json(document)
+            const request = await pool.request().query(`
+                SELECT Reviews.Id as Id, Prefix, Code, Title, Difficulty, Workload, Professor, Body, CreatedAt  FROM Reviews
+                JOIN USERS ON Users.Id = Reviews.UserId
+                JOIN Courses On Courses.Id = Reviews.CourseId
+                WHERE UserId = '${id}'`)
+            res.status(200).json(request.recordset)
         } catch (error) {
             res.status(500).send("Error connecting to MongoDB");
             console.error(error);
         } finally {
-            if (client) {
-                await client.close();
+            if (pool) {
+                pool.close();
             }
         }
 })

@@ -12,4 +12,9 @@
 
 .section-changer {
     cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.section-changer:hover {
+    transform: translateY(-3px) scale(1.05);
 }

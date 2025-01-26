@@ -280,7 +280,10 @@ const ProfileView = () => {
             <h2 className={`my-reviews ${showReviews ? 'showingReviews' : ''}`} onClick={toggleShowReviews}>My Reviews</h2>
             {showReviews && reviews && (
                 reviews.map((review, index) => (
-                    <p>{review.courseName}: {review.body}</p>
+                    <div>
+                        <p>{review.CreatedAt}</p>
+                        <p>{review.Prefix} {review.Code} - {review.Title}: {review.Body}</p>
+                    </div>
                 ))
             )}
         </div>

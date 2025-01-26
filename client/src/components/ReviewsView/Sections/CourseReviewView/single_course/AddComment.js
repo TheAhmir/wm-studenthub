@@ -20,16 +20,12 @@ const AddComment = ({close, this_user, course}) => {
                 //'Authorization': token
             },
             body: JSON.stringify({
-                reviewId: 321,
-                courseId: course._id,
-                courseName: course.title,
+                courseId: course.Id,
                 userId: user.uid,
-                userName: user.displayName,
                 difficulty: difficulty,
-                workLoad: workLoad,
+                workload: workLoad,
                 professor: professor,
-                body: review,
-                date_added: new Date().toLocaleString()
+                body: review
             })
         })
         .then(response => response.json())

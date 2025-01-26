@@ -114,6 +114,7 @@ const App = () => {
             })
             .then(jsonData => {
                 setCourses(jsonData);
+                console.log(jsonData)
             })
             .catch(err => console.error("Error fetching data:", err));
   }, [])

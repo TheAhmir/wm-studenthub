@@ -1,62 +1,103 @@
 const express = require('express');
 const router = express.Router();
-const { MongoClient, ObjectId } = require('mongodb');
+const sql = require('mssql');
 require('dotenv').config();
 
-const MONGODB_URI = process.env.AZURE_COSMOS_CONNECTIONSTRING;
+const config = {
+    user: process.env.AZURE_SQL_USERNAME,
+    password: process.env.AZURE_SQL_PASSWORD,
+    server: process.env.AZURE_SQL_SERVER,
+    database: process.env.AZURE_SQL_DATABASE,
+    options: {
+        encrypt: true,
+        trustServerCertificate: true,
+        enableArithAbort: true,
+        port: Number(process.env.AZURE_SQL_PORT)
+    },
+    connectionTimeout: 30000,
+    requestTimeout: 30000,
+};
 
 // Route to list all collection names
 router.get('/', async (req, res) => {
+    let pool;
     try {
-        const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-        await client.connect();
-        const db = client.db("wm-studenthub-database"); // Make sure this matches your database name
-        const collections = await db.listCollections().toArray();
-        const collectionNames = collections.map(col => col.name);
-        await client.close();
-        res.status(200).json(collectionNames);
+        pool = await sql.connect(config);
+
+        const result = await pool.request().query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME <> 'database_firewall_rules'");
+
+        if (result.recordset.length === 0) {
+            res.status(404).json({ message: 'No data found' });
+        } else {
+            res.status(200).json(result.recordset);
+        }
     } catch (error) {
-        res.status(500).send("Error connecting to MongoDB");
+        res.status(500).send("Error connecting to SQL Server");
         console.error(error);
+    } finally {
+        if (pool) {
+            pool.close()
+        }
     }
 });
 
 // Route to get all data from a specific collection
 router.get('/:collectionName', async (req, res) => {
+    let pool;
     try {
-        const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-        await client.connect();
-        const db = client.db("wm-studenthub-database"); // Make sure this matches your database name
+        pool = await sql.connect(config);
+
         const collectionName = req.params.collectionName;
-        const collection = db.collection(collectionName);
-        const documents = await collection.find({}).toArray();
-        await client.close();
-        res.status(200).json(documents);
+
+        let result;
+        if (collectionName === 'Courses') {
+            result = await pool.request().query(`SELECT * FROM ${collectionName} ORDER BY 'Prefix' ASC, 'Code' ASC`)
+        }
+        else {
+            result = await pool.request().query(`SELECT * FROM ${collectionName}`)
+        }
+        
+        if (result.recordset.length === 0) {
+            res.status(404).json({ message: 'No data found' });
+        } else {
+            res.status(200).json(result.recordset);
+        }
     } catch (error) {
-        res.status(500).send("Error connecting to MongoDB");
+        res.status(500).send("Error connecting to SQL Server");
         console.error(error);
+    } finally {
+        if (pool) {
+            pool.close()
+        }
     }
 });
 
 // Route to get all data from a specific document
 router.get('/:collectionName/:id', async (req, res) => {
+    let pool;
     try {
-        const client = new MongoClient(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-        await client.connect();
-        const db = client.db("wm-studenthub-database"); 
+        pool = await sql.connect(config)
 
         const collectionName = req.params.collectionName;
-        const collection = db.collection(collectionName);
 
-        const objectId = new ObjectId(req.params.id);
+        const Id = req.params.id;
 
-        const document = await collection.find({ _id: objectId }).toArray();
+        const result = await pool.request()
+        .input('Id', sql.UniqueIdentifier, Id)
+        .query(`SELECT * FROM ${collectionName} WHERE Id = @Id`)
 
-        await client.close();
-        res.status(200).json(document);
+        if (result.recordset.length === 0) {
+            res.status(404).json({ message: 'No data found' });
+        } else {
+            res.status(200).json(result.recordset);
+        }
     } catch (error) {
-        res.status(500).send("Error connecting to MongoDB");
+        res.status(500).send("Error connecting to SQL Server");
         console.error(error);
+    } finally {
+        if (pool) {
+            pool.close()
+        }
     }
 });
 

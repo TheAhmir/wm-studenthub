@@ -17,9 +17,9 @@ const CourseReviewBaseView = ({initialData}) => {
 
     useEffect(() => {
         const data_filter = data.filter(row =>
-        (prefixText ? row['prefix'].toLowerCase().includes(prefixText.toLowerCase()) : true ) &&
-        (codeText ? row['code'].includes(codeText) : true) &&
-        (titleText ? row['title'].toLowerCase().includes(titleText.toLowerCase()) : true)
+        (prefixText ? row['Prefix'].toLowerCase().includes(prefixText.toLowerCase()) : true ) &&
+        (codeText ? row['Code'].includes(codeText) : true) &&
+        (titleText ? row['Title'].toLowerCase().includes(titleText.toLowerCase()) : true)
         );
         setFilteredData(data_filter)
 
@@ -68,22 +68,22 @@ const CourseReviewBaseView = ({initialData}) => {
                 currentPage === 0 ? index <= 15 &&(
                 <div>
                     <Link 
-                    to={`/reviews/courses/${row['prefix']}-${row['code']}-${row['title'].replace(/\s+/g, '-').replace('?', '')}`}
+                    to={`/reviews/courses/${row['Prefix']}-${row['Code']}-${row['Title'].replace(/\s+/g, '-').replace('?', '')}`}
                     state={{ 
                         course : row
                     }}
                     key={index}>
-                    {row['prefix']} {row['code']} - {row['title']}
+                    {row['Prefix']} {row['Code']} - {row['Title']}
                     </Link>
                 </div>
                 ) :
                 index > currentPage * 15 && index <= (currentPage + 1) * 15 && (
                     <div>
                     <Link 
-                    to={`/reviews/courses/${row['prefix']}-${row['code']}-${row['title'].replace(/\s+/g, '-').replace('?', '')}`}
+                    to={`/reviews/courses/${row['Prefix']}-${row['Code']}-${row['Title'].replace(/\s+/g, '-').replace('?', '')}`}
                     state={{ course : row}}
                     key={index}>
-                    {row['prefix']} {row['code']} - {row['title']}
+                    {row['Prefix']} {row['Code']} - {row['Title']}
                     </Link>
                 </div>
                 )

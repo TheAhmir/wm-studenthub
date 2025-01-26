@@ -24,15 +24,16 @@ const SingleCourseReviewView = () => {
     useEffect(() => {
         if (!reviewsLoaded) return;
 
-        const totalDifficulty = reviews.reduce((sum, review) => sum + Number(review.difficulty), 0)
+        const totalDifficulty = reviews.reduce((sum, review) => sum + Number(review.Difficulty), 0)
         setAvgDifficulty((totalDifficulty / reviews.length).toFixed(1))
 
-        const totalWorkLoad = reviews.reduce((sum, review) => sum + Number(review.workLoad), 0)
+        const totalWorkLoad = reviews.reduce((sum, review) => sum + Number(review.Workload), 0)
         setAvgWorkLoad((totalWorkLoad / reviews.length).toFixed(1))
     }, [reviews, reviewsLoaded])
 
+
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/reviews/${course._id}`)
+        fetch(`${process.env.REACT_APP_API_URL}/reviews/${course.Id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok')
@@ -40,21 +41,35 @@ const SingleCourseReviewView = () => {
                 return response.json();
             })
             .then(reviewData => {
-                setReviews(reviewData)
+                const formattedReviews = reviewData.map(review => {
+                    return {
+                        ...review,
+                        CreatedAt: new Date(review.CreatedAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        })
+                    };
+                });
+                setReviews(formattedReviews)
                 setReviewsLoaded(true)
 
                 })
                 .catch(err => {
                     console.error("Error fetching reviews:", err)
                 });
+    }, [course.Id])
 
-
+    useEffect(() => {
         // Listen for authentication state changes
         const unsubscribe = trackUserChanges(setUser);
     
         // Clean up subscription on unmount
         return () => unsubscribe();
-      });
+      }, []);
 
     if (!course) {
         return <div>No course information available</div>;
@@ -67,8 +82,8 @@ const SingleCourseReviewView = () => {
         )}
         <div>
             <div className="heading">
-                <h2>{course['title']}</h2>
-                <p>{'>'} {course['prefix']} {course['code']}</p>
+                <h2>{course['Title']}</h2>
+                <p>{'>'} {course['Prefix']} {course['Code']}</p>
                 <div className="course-rating">
                     <div className={`text-rating ${isNaN(avgDifficulty) || !avgDifficulty ? 'missing' : avgDifficulty < 2.5 ? 'low' : avgDifficulty < 4 ? 'med' : 'high'}`}>
                         <h3>{isNaN(avgDifficulty) || !avgDifficulty ? '' : avgDifficulty}</h3>
@@ -91,18 +106,18 @@ const SingleCourseReviewView = () => {
                     {reviews && (reviews.map((review, index) => (
                         <div className="review">
                             <div className="meta-data">
-                                <p>{review.userName}</p>
+                                <p>{review.Name}</p>
                                 <div className="date-trash">
-                                    <p>{review.date_added}</p>
-                                    {review.userId === user.uid && <FaRegTrashAlt  className="trash-icon"/>}
+                                    <p>{review.CreatedAt}</p>
+                                    {user && review.UserId === user.uid && <FaRegTrashAlt  className="trash-icon"/>}
                                 </div>
                             </div>
 
                             <div className="review-rating">
-                                <label>Difficulty: {review.difficulty}</label>
-                                <label>Work Load: {review.workLoad}</label>
+                                <label>Difficulty: {review.Difficulty.toFixed(1)}</label>
+                                <label>Work Load: {review.Workload.toFixed(1)}</label>
                             </div>
-                            <p>{review.body}</p>
+                            <p>{review.Body}</p>
                         </div>
                     )))}
                 </div>
